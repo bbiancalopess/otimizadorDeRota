@@ -3,8 +3,6 @@
 
 #define MAX_SIZE 20
 
-//teste
-
 /*
 Para iniciar eu precisava de uma maneira ágil de montar as matrizes de transito, criminalidade e distancia.
 Para isso, criei a matriz que abre o arquivo txt, lê linha por linha, e atribui o valor à posicao dita.
