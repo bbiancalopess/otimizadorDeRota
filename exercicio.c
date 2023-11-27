@@ -51,7 +51,7 @@ void imprimeMatriz(int matriz[MAX_SIZE][MAX_SIZE]){
 
 void imprimeVetor(int tamanho_vetor, int vetor[tamanho_vetor]){
     printf("[");
-    for (int i = 0; i < MAX_SIZE; i++) {
+    for (int i = 0; i < tamanho_vetor; i++) {
         printf("%d ", vetor[i]);
     }
     printf("]\n");
@@ -82,8 +82,7 @@ void main(){
 
     int custo[MAX_SIZE][MAX_SIZE];
 
-    int tamanho_caminho = 0;
-    int caminho[tamanho_caminho + 1];
+    int caminho[5] = {5, 17, 12, 1, 19};
 
     // Gera a matriz custo
     for(int i = 0; i < MAX_SIZE; i++){
@@ -96,31 +95,23 @@ void main(){
         }
     }
 
-    while(tamanho_caminho < 5){
-        printf("Digite um local para ser adicionado ao caminho: ");
-        scanf("%d", &caminho[tamanho_caminho]);
 
-        tamanho_caminho++;
-    }
-
-    printf("tamanho caminho = %d\n", tamanho_caminho);
-
-    printf("CAMINHO:\n");
-    imprimeVetor(tamanho_caminho, caminho);
+    //printf("CAMINHO:\n");
+    //imprimeVetor(5, caminho);
 
     // Imprimir a matriz (apenas para fins de verificação)
-    printf("DISTANCIA:\n");
-    imprimeMatriz(distancia);
+    //printf("DISTANCIA:\n");
+    //imprimeMatriz(distancia);
 
-    printf("CRIMINALIDADE:\n");
-    imprimeMatriz(criminalidade);
+    //printf("CRIMINALIDADE:\n");
+    //imprimeMatriz(criminalidade);
 
-    printf("TRANSITO:\n");
-    imprimeMatriz(transito);
+    //printf("TRANSITO:\n");
+    //imprimeMatriz(transito);
 
-    printf("CUSTO:\n");
-    imprimeMatriz(custo);
+    //printf("CUSTO:\n");
+    //imprimeMatriz(custo);
 
-    printf("caminho 1 -> 2 = %d", calculaCusto(distancia, criminalidade, transito, 1, 2));
+    //printf("caminho 1 -> 2 = %d", calculaCusto(distancia, criminalidade, transito, 1, 2));
 
 }
