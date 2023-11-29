@@ -60,104 +60,78 @@ int calculaCusto(int distancia[MAX_SIZE][MAX_SIZE], int criminalidade[MAX_SIZE][
    return soma;
 }
 
+void geraMatrizCusto(int matriz[][MAX_SIZE], int distancia[][MAX_SIZE], int criminalidade[][MAX_SIZE], int transito[][MAX_SIZE]){
+    for(int i = 0; i < MAX_SIZE; i++){
+        for(int j = 0; j < MAX_SIZE; j++){
+            if(distancia[i][j] == -1 || criminalidade[i][j] == -1 || transito[i][j] == -1){
+                matriz[i][j] = -1;
+            } else {
+                matriz[i][j] = calculaCusto(distancia, criminalidade, transito, i, j);
+            }            
+        }
+    }
+}
+
+int achaRota(int caminho_otimizado[MAX_SIZE], int inicial, int reserva[][MAX_SIZE]){
+
+    int menor_valor, posicao = 0, index, soma_custo = 0;
+    caminho_otimizado[0] = inicial;
+
+    do{
+        menor_valor = 99999999;
+
+        for(int i = 0; i < MAX_SIZE; i++){
+            if(reserva[inicial][i] != -1 && reserva[inicial][i] <= menor_valor){ 
+                menor_valor = reserva[inicial][i];
+                index = i;
+            }
+        }
+
+        posicao++;
+        caminho_otimizado[posicao] = index;
+        soma_custo += menor_valor;
+
+        for (int i = 0; i < MAX_SIZE; i++){
+            reserva[i][inicial] = -1;
+            reserva[inicial][i] = -1;
+        }
+
+        inicial = index;
+        
+    } while(posicao < MAX_SIZE-1);
+
+    return soma_custo;
+}
+
 void main(){
 
-    // matrizes dos fatores
     int distancia[MAX_SIZE][MAX_SIZE], criminalidade[MAX_SIZE][MAX_SIZE], transito[MAX_SIZE][MAX_SIZE];
-    // matriz custo
     int custo[MAX_SIZE][MAX_SIZE], reserva[MAX_SIZE][MAX_SIZE];
+    int caminho_otimizado[MAX_SIZE], custo_rota_otimizada = 9999999, vetor_final[MAX_SIZE], inicial;
+
+    geraMatrizCusto(custo, distancia, criminalidade, transito);
+    geraMatrizCusto(reserva, distancia, criminalidade, transito);
 
     // pega os dados das matrizes dos fatores
     txtToMatriz("distancia.txt", distancia);
     txtToMatriz("criminalidade.txt", criminalidade);
     txtToMatriz("transito.txt", transito);
 
-    // Gera a matriz custo
+
     for(int i = 0; i < MAX_SIZE; i++){
-        for(int j = 0; j < MAX_SIZE; j++){
-            if(distancia[i][j] == -1 || criminalidade[i][j] == -1 || transito[i][j] == -1){
-                custo[i][j] = -1;
-                reserva[i][j] = -1;
-            } else {
-                custo[i][j] = calculaCusto(distancia, criminalidade, transito, i, j);
-                reserva[i][j] = calculaCusto(distancia, criminalidade, transito, i, j);
-            }            
-        }
-    }
-    // caminho inicial e caminho otimizado
-    int caminho[MAX_SIZE] = {1, 5, 2, 3, 4, 0,7,8,9,10,11,12,14,15,16,17,18,19,6,14}, caminho_otimizado[MAX_SIZE];
-    //variáveis utilizadas para achar o caminho otimizado
-    int inicial = caminho[0], final = caminho[MAX_SIZE - 1], menor_valor, posicao = 0, index;
+        int retorno = achaRota(caminho_otimizado, i, reserva);
 
-    printf("Digite um valor de 0 a 19 para ser o ponto inicial da rota: ");
-    scanf("%d",&inicial);
-    printf("Digite um valor de 0 a 19 para ser o ponto final da rota: ");
-    scanf("%d",&final);
-
-    caminho_otimizado[0] = inicial;
-    caminho_otimizado[MAX_SIZE - 1] = final;
-
-    // coloca como -1 a posicao final do caminho na matriz para que essa nao seja levada em consideracao no algoritmo
-    for (int i = 0; i < MAX_SIZE; i++){
-            reserva[i][final] = -1;
-            reserva[final][i] = -1;
-    }
-
-    // imprimeMatriz(reserva);
-    // printf("#--------------------#\n");
-    // imprimeVetor(MAX_SIZE, caminho);
-    // printf("\n#--------------------#\n");
-
-    do{
-        menor_valor = 99999999;
-        // printf("menor_valor  %d\n", menor_valor);
-        // printf("inicial = %d\n", inicial);
-        //printf("final = %d\n", final);
-        // roda pela linha e acha o menor caminho
-        for(int i = 0; i < MAX_SIZE; i++){
-            // printf("i = %d\n", i);
-            // printf("i = %d\n",i);
-            // printf("custo[inicial][i] = %d\n",reserva[inicial][i]);
-            // printf("x = %d\n",x);
-            if(reserva[inicial][i] != -1 && reserva[inicial][i] <= menor_valor){ 
-                
-                menor_valor = reserva[inicial][i];
-                index = i;
-                // printf("entrei | index = %d | menor_valor = %d\n", index, menor_valor);
-                // printf("x alterado = %d\n",x);
+        if(retorno < custo_rota_otimizada){
+            custo_rota_otimizada = retorno;
+            for(int j = 0; j < MAX_SIZE; j++){
+                vetor_final[j] = caminho_otimizado[j];
             }
         }
 
-        // conta quantos pontos já foram achados
-        posicao++;
-        // adiciona o ponto ao caminho otimizado
-        // printf("posicao = %d\n",posicao);
-        // printf("index = %d\n",index);
-        // printf("menor_valor  %d\n", menor_valor);
-        caminho_otimizado[posicao] = index;
-        // substitui por zero o caminho já percorrido
-        // printf("zerou em %d\n", inicial);
-        // coloca a posicao que acabou de ser analisada como -1 para deixar claro que nao se pode voltar para a posicao antiga
-        for (int i = 0; i < MAX_SIZE; i++){
-            reserva[i][inicial] = -1;
-            reserva[inicial][i] = -1;
-        }
+        geraMatrizCusto(reserva, distancia, criminalidade, transito);
+    }
 
-        // define a atual posicao como a que acabou de ser encontrada para que se ache a proxima posicao
-        inicial = index;
-        
-        // printf("--------------------\n");
-        // imprimeMatriz(reserva);
-
-
-        //printf("x = %d | index = %d", x, index);
-        // printf("#--------------------#\n");
-    } while(posicao < MAX_SIZE-2);
-
-    //caminho_otimizado[0] = caminho[0];
-    //caminho_otimizado[MAX_SIZE - 1] = caminho[MAX_SIZE - 1];
-    
     printf("o caminho otimizado eh: \n");
-    imprimeVetor(MAX_SIZE, caminho_otimizado);
+    imprimeVetor(MAX_SIZE, vetor_final);
     printf("\n");
 }
