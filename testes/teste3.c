@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-#define MAX_SIZE 20
+#define MAX_SIZE 5
 
 void imprimeMatriz(int matriz[MAX_SIZE][MAX_SIZE]){
 
@@ -48,6 +49,28 @@ void txtToMatriz(char nome_file[50], int matriz[MAX_SIZE][MAX_SIZE]){
     fclose(arquivo);
 }
 
+int countTXT(char nome_file[50]){
+    FILE *arquivo;
+    int linha, coluna, valor, contador = 0;
+
+
+    arquivo = fopen(nome_file, "r");
+
+    if (arquivo == NULL) {
+        perror("Erro ao abrir o arquivo");
+    }
+
+    // Leitura do arquivo e preenchimento da matriz
+    while (fscanf(arquivo, "%d, %d, %d", &linha, &coluna, &valor) == 3) { //enquanto acha os 3 valores
+        contador++;
+    }
+
+    // Fechar o arquivo
+    fclose(arquivo);
+
+    return sqrt(contador) + 1;
+}
+
 int calculaCusto(int distancia[MAX_SIZE][MAX_SIZE], int criminalidade[MAX_SIZE][MAX_SIZE], int transito[MAX_SIZE][MAX_SIZE], int linha, int coluna){
     int soma = distancia[linha][coluna] + (3 * criminalidade[linha][coluna]) + (2 * transito[linha][coluna]);
 
@@ -77,7 +100,10 @@ int achaRota(int caminho[MAX_SIZE], int inicial, int custo[][MAX_SIZE]){
     int menor_valor, posicao = 0, index, soma_custo = 0;
     caminho[0] = inicial;
 
+    printf("\n\ninicial = %d\n", inicial);
+
     do{
+        
         menor_valor = 99999999;
 
         for(int i = 0; i < MAX_SIZE; i++){
@@ -109,27 +135,47 @@ void main(){
     int custo[MAX_SIZE][MAX_SIZE];
     int caminho[MAX_SIZE], custo_rota_otimizada = 9999999, caminho_otimizado[MAX_SIZE], inicial;
 
+    
+
     // pega os dados das matrizes dos fatores
-    txtToMatriz("distancia.txt", distancia);
-    txtToMatriz("criminalidade.txt", criminalidade);
-    txtToMatriz("transito.txt", transito);
+    txtToMatriz("distancia3.txt", distancia);
+    txtToMatriz("criminalidade3.txt", criminalidade);
+    txtToMatriz("transito3.txt", transito);
 
     geraMatrizCusto(custo, distancia, criminalidade, transito);
+
+    printf("\nmatriz custo: \n");
+    imprimeMatriz(custo);
+
+    printf("\n");
+
+    int contadorTXT = countTXT("distancia3.txt");
+
+    printf("contadorTXT = %d", contadorTXT);
 
     for(int i = 0; i < MAX_SIZE; i++){
         int retorno = achaRota(caminho, i, custo);
 
+        printf("\nretorno = %d\n", retorno);
+        printf("caminho = \n");
+
+        imprimeVetor(MAX_SIZE, caminho);
+
         if(retorno < custo_rota_otimizada){
             custo_rota_otimizada = retorno;
+            printf("\ncusto_rota_otimizada = %d\n", custo_rota_otimizada);
             for(int j = 0; j < MAX_SIZE; j++){
                 caminho_otimizado[j] = caminho[j];
+                printf("caminho_otimizado: ");
+                imprimeVetor(MAX_SIZE, caminho_otimizado);
+                printf("\n");
             }
         }
 
         geraMatrizCusto(custo, distancia, criminalidade, transito);
     }
 
-    printf("o caminho otimizado eh: \n");
+    printf("\no caminho otimizado eh: \n");
     imprimeVetor(MAX_SIZE, caminho_otimizado);
     printf("\n");
 }

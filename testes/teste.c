@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_SIZE 20
+#define MAX_SIZE 10
 
 void imprimeMatriz(int matriz[MAX_SIZE][MAX_SIZE]){
 
@@ -77,7 +77,10 @@ int achaRota(int caminho[MAX_SIZE], int inicial, int custo[][MAX_SIZE]){
     int menor_valor, posicao = 0, index, soma_custo = 0;
     caminho[0] = inicial;
 
+    printf("\n\ninicial = %d\n", inicial);
+
     do{
+        
         menor_valor = 99999999;
 
         for(int i = 0; i < MAX_SIZE; i++){
@@ -109,28 +112,44 @@ void main(){
     int custo[MAX_SIZE][MAX_SIZE];
     int caminho[MAX_SIZE], custo_rota_otimizada = 9999999, caminho_otimizado[MAX_SIZE], inicial;
 
-    geraMatrizCusto(custo, distancia, criminalidade, transito);
+    
 
     // pega os dados das matrizes dos fatores
-    txtToMatriz("distancia.txt", distancia);
-    txtToMatriz("criminalidade.txt", criminalidade);
-    txtToMatriz("transito.txt", transito);
+    txtToMatriz("distancia2.txt", distancia);
+    txtToMatriz("criminalidade2.txt", criminalidade);
+    txtToMatriz("transito2.txt", transito);
+
+    geraMatrizCusto(custo, distancia, criminalidade, transito);
+
+    printf("\nmatriz custo: \n");
+    imprimeMatriz(custo);
+
+    printf("\n");
 
 
     for(int i = 0; i < MAX_SIZE; i++){
         int retorno = achaRota(caminho, i, custo);
 
+        printf("\nretorno = %d\n", retorno);
+        printf("caminho = \n");
+
+        imprimeVetor(MAX_SIZE, caminho);
+
         if(retorno < custo_rota_otimizada){
             custo_rota_otimizada = retorno;
+            printf("\ncusto_rota_otimizada = %d\n", custo_rota_otimizada);
             for(int j = 0; j < MAX_SIZE; j++){
                 caminho_otimizado[j] = caminho[j];
+                printf("caminho_otimizado: ");
+                imprimeVetor(MAX_SIZE, caminho_otimizado);
+                printf("\n");
             }
         }
 
         geraMatrizCusto(custo, distancia, criminalidade, transito);
     }
 
-    printf("o caminho otimizado eh: \n");
+    printf("\no caminho otimizado eh: \n");
     imprimeVetor(MAX_SIZE, caminho_otimizado);
     printf("\n");
 }
